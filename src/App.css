@@ -32,7 +32,36 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+
+
+/* styles.css */
+.custom-table {
+  border: 1px solid #ccc;
+  /* Add a border */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 15px;
+  border: 1px solid #ccc;
+  /* Add cell borders */
+}
+
+.custom-table th {
+  background-color: #133386;
+  color: white;
+}
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
