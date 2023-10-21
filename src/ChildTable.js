@@ -4,6 +4,7 @@ import "./App.css";
 const ChildTable = () => {
   const [data, setData] = useState([]); // State to store the fetched data
   const [isLoading, setIsLoading] = useState(true); // State to track loading
+  const [noData, setNoData] = useState(false); // State to track if there's no data
 
   const { parentGUID } = useParams();
   console.log("parentGUID------>", parentGUID);
@@ -12,6 +13,11 @@ const ChildTable = () => {
 
   const handleRowClick = (rowGUID) => {
     navigate(`/trialBalance/${rowGUID}`);
+  };
+
+  // Function to handle the OK button click
+  const handleOKClick = () => {
+    navigate("/trialBalance");
   };
 
   useEffect(() => {
@@ -131,45 +137,73 @@ const ChildTable = () => {
         <div className="loader" style={{ backgroundColor: "#133386" }}></div>
       </div>
     );
-  }
-  return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <h2>Trial Balance</h2>
-      <table className="table table-hover table-sm table-bordered ">
-        <thead>
-          <tr style={rowStyles}>
-            <th style={{ ...rowStyles, ...thStyles }} scope="col">
-              LEDGER
-            </th>
-            <th style={{ ...rowStyles, ...thStyles }} scope="col">
-              Credit
-            </th>
-            <th style={{ ...rowStyles, ...thStyles }} scope="col">
-              Debit
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {parent.children?.map((row) => {
-            const { totalPositive, totalNegative } = sumAmounts(row);
-            return (
-              <tr
-                key={row.GUID}
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  handleRowClick(row.GUID); // Programmatically navigate
-                }}
-              >
-                <td>{row.name}</td>
-                <td style={tdStyles}>{totalPositive}</td>
-                <td style={tdStyles}>{totalNegative}</td>
+  } else if (parent.children && parent.children.length > 0) {
+    return (
+      <div style={{ width: "100%", height: "100%" }}>
+        <h2>Trial Balance</h2>
+        <table className="table table-hover table-sm table-bordered">
+          <table className="table table-hover table-sm table-bordered ">
+            <thead>
+              <tr style={rowStyles}>
+                <th style={{ ...rowStyles, ...thStyles }} scope="col">
+                  LEDGER
+                </th>
+                <th style={{ ...rowStyles, ...thStyles }} scope="col">
+                  Credit
+                </th>
+                <th style={{ ...rowStyles, ...thStyles }} scope="col">
+                  Debit
+                </th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
+            </thead>
+            <tbody>
+              {parent.children?.map((row) => {
+                const { totalPositive, totalNegative } = sumAmounts(row);
+                return (
+                  <tr
+                    key={row.GUID}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleRowClick(row.GUID); // Programmatically navigate
+                    }}
+                  >
+                    <td>{row.name}</td>
+                    <td style={tdStyles}>{totalPositive}</td>
+                    <td style={tdStyles}>{totalNegative}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          ;
+        </table>
+      </div>
+    );
+  } else if (noData) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <h2>Trial Balance</h2>
+        <div className="message-box">
+          <p>No data available for this parent.</p>
+          <button onClick={handleOKClick} className="ok-button">
+            OK
+          </button>
+        </div>
+      </div>
+    );
+  } else {
+    setNoData(true); // Set noData state to true when there's no data
+    return null;
+  }
 };
 
 export default ChildTable;
