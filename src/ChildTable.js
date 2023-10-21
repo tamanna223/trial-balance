@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-
+import "./App.css";
 const ChildTable = () => {
   const [data, setData] = useState([]); // State to store the fetched data
+  const [isLoading, setIsLoading] = useState(true); // State to track loading
 
   const { parentGUID } = useParams();
   console.log("parentGUID------>", parentGUID);
@@ -18,6 +19,9 @@ const ChildTable = () => {
   }, []);
 
   const getData = async () => {
+    // Set isLoading to true while fetching data
+    setIsLoading(true);
+
     let tokenData =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydW5AY2V2aW91cy5jb20iLCJpYXQiOjE2OTc3OTQ1MDQsImV4cCI6MTY5OTIzNDUwNH0.rJrHNqE_nK9eE7VqLGUQbilpCnBy6xMRRnYMRCaY9iM";
     try {
@@ -42,6 +46,9 @@ const ChildTable = () => {
       }
     } catch (err) {
       console.error("Error:", err);
+    } finally {
+      // Set isLoading to false after data is fetched
+      setIsLoading(false);
     }
   };
 
@@ -68,10 +75,6 @@ const ChildTable = () => {
 
   const parent = findParentWithChildrenByGUID(data, parentGUID);
   const { totalPositive, totalNegative } = sumAmounts(parent);
-
-  if (!parent || !parent.children) {
-    return <div>No children found</div>;
-  }
 
   const rowStyles = {
     backgroundColor: "#133386",
@@ -117,11 +120,18 @@ const ChildTable = () => {
     recursiveSum(parent);
 
     return {
-      totalPositive,
-      totalNegative,
+      totalPositive: totalPositive.toFixed(2), // Format to 2 decimal places
+      totalNegative: totalNegative.toFixed(2), // Format to 2 decimal places
     };
   }
-
+  // Render the loader if isLoading is true
+  if (isLoading) {
+    return (
+      <div className="loader-container">
+        <div className="loader" style={{ backgroundColor: "#133386" }}></div>
+      </div>
+    );
+  }
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <h2>Trial Balance</h2>
@@ -140,7 +150,7 @@ const ChildTable = () => {
           </tr>
         </thead>
         <tbody>
-          {parent.children.map((row) => {
+          {parent.children?.map((row) => {
             const { totalPositive, totalNegative } = sumAmounts(row);
             return (
               <tr

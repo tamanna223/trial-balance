@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link, Route, BrowserRouter as Router } from "react-router-dom";
+
 import ParentTable from "./ParentTable";
+import "./App.css";
+
+const Loader = () => (
+  <div className="loader-container">
+    <div className="loader" style={{ backgroundColor: "#133386" }}></div>
+  </div>
+);
 
 const TrialBalance = () => {
   const [data, setData] = useState([]); // State to store the fetched data
+  const [isLoading, setIsLoading] = useState(true); // State to track loading
 
   useEffect(() => {
     getData();
@@ -34,6 +42,9 @@ const TrialBalance = () => {
       }
     } catch (err) {
       console.error("Error:", err);
+    } finally {
+      // Set isLoading to false after data is fetched
+      setIsLoading(false);
     }
   };
 
@@ -83,6 +94,10 @@ const TrialBalance = () => {
 
   const topLevelParentTotals = calculateTotalAmountsForTopLevelParents(data);
   console.log("data", data);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div>

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import ChildTable from "./ChildTable";
 import "./App.css";
-
+import { useParams, useNavigate } from "react-router";
 const ParentTable = ({ data, topLevelParentTotals }) => {
   // Define CSS styles for the rows
   const rowStyles = {
@@ -17,6 +17,13 @@ const ParentTable = ({ data, topLevelParentTotals }) => {
 
   const tdStyles = {
     padding: "15px",
+  };
+  const navigate = useNavigate(); // Get the navigate function from react-router-dom
+
+  const handleRowClick = (parentGUID) => {
+    // Handle the row click here
+    // For example, navigate to a new page with the parentGUID in the URL
+    navigate(`/trialBalance/${parentGUID}`);
   };
 
   return (
@@ -37,18 +44,22 @@ const ParentTable = ({ data, topLevelParentTotals }) => {
         </thead>
         <tbody>
           {data?.map((parent, index) => (
-            <tr key={index}>
+            <tr
+              key={index}
+              onClick={() => handleRowClick(parent.GUID)}
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                cursor: "pointer",
+              }}
+            >
               <td>
                 <Link
                   to={{
                     pathname: `/trialBalance/${parent.GUID}`,
                     state: { data: parent },
                   }}
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                    cursor: "pointer",
-                  }}
+                  style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <div style={{ width: "100%" }}>{parent.name}</div>
                 </Link>
